@@ -68,7 +68,8 @@ public class DemoApplication {
 			response.setSuccess(true);
 			response.setData(data);
 		} catch (Exception ex){
-//			logger.error("error writing data file: "+ex.getMessage());
+			response.setDetails(ex.getMessage());
+			response.setData(ex);
 		}
 		return response;
 	}
