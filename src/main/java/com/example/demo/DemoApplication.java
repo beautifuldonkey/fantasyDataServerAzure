@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.zip.GZIPInputStream;
 
 @SpringBootApplication
 @RestController
@@ -48,6 +50,26 @@ public class DemoApplication {
 			data.add(record);
 		}
 		response.setData(data);
+		return response;
+	}
+
+	@RequestMapping(value = "/fetchData")
+	public @ResponseBody
+	FantasyDataResponse fetchData(){
+		FantasyDataResponse response = new FantasyDataResponse();
+		response.setName("build data file");
+		response.setSuccess(false);
+		String fileName = "rawFantasyData.gzip";
+		try{
+			FileInputStream fis = new FileInputStream(fileName);
+			GZIPInputStream gzipInputStream = new GZIPInputStream(fis);
+			String data = gzipInputStream.toString();
+
+			response.setSuccess(true);
+			response.setData(data);
+		} catch (Exception ex){
+//			logger.error("error writing data file: "+ex.getMessage());
+		}
 		return response;
 	}
 }
