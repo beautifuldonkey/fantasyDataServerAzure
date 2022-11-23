@@ -5,6 +5,10 @@ import com.example.demo.domain.PlayerData;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.zip.GZIPInputStream;
+import java.util.Iterator;
+import java.util.List;
 
 @SpringBootApplication
 @RestController
@@ -64,21 +68,35 @@ public class DemoApplication {
 		FantasyDataResponse response = new FantasyDataResponse();
 		response.setName("build data file");
 		response.setSuccess(false);
-		String fileName = "rawFantasyData.gzip";
-		String endpoint = "https://cosdbacc.mongo.cosmos.azure.com:443/";
-		String cosmosKey = "1c5d2a44-9023-47ba-9896-7be9efe43ba3";
-		String encodedEndpoint = new String(Base64.getEncoder().encode(endpoint.getBytes(StandardCharsets.UTF_8)));
-		String encodedKey = new String(Base64.getEncoder().encode(cosmosKey.getBytes(StandardCharsets.UTF_8)));
+
 		try{
+			String fileName = "rawFantasyData.gzip";
+			String endpoint = "https://cosdbacc.mongo.cosmos.azure.com:443/";
+			String cosmosKey = "1c5d2a44-9023-47ba-9896-7be9efe43ba3";
+			String encodedEndpoint = new String(Base64.getEncoder().encode(endpoint.getBytes(StandardCharsets.UTF_8)));
+			String encodedKey = new String(Base64.getEncoder().encode(cosmosKey.getBytes(StandardCharsets.UTF_8)));
+
+			MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://cosdbacc:EGw6GbaWqxSPzLjZWoauURc0ARd9tyyxJE3Rpon1y991wU8rYYUd9jg1a7cZdWvoRKLsnHc74A6zTJb5PAdS7g==@cosdbacc.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cosdbacc@"));
+			MongoDatabase db = mongoClient.getDatabase("appData");
+			MongoCollection<Document> data2 = db.getCollection("testCollection");
+
+			List<Document> list = data2.find().into(new ArrayList<Document>());
+
+			FindIterable<Document> iterDoc = data2.find();
+			Iterator it = iterDoc.iterator();
+			while (it.hasNext()) {
+				System.out.println(it.next());
+			}
+
+			response.setData(list);
+			response.setSuccess(true);
+
 			// It only requires endpoint and key, but other useful settings are available
 //			CosmosAsyncClient cosmosAsyncClient = new CosmosClientBuilder()
 //					.endpoint(encodedEndpoint)
 //					.key(encodedKey)
 //					.buildAsyncClient();
 
-			MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://cosdbacc:EGw6GbaWqxSPzLjZWoauURc0ARd9tyyxJE3Rpon1y991wU8rYYUd9jg1a7cZdWvoRKLsnHc74A6zTJb5PAdS7g==@cosdbacc.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cosdbacc@"));
-
-			mongoClient.getOptions();
 // Create a new CosmosClient via the CosmosClientBuilder
 //			CosmosClient cosmosClient = new CosmosClientBuilder()
 //					.endpoint("<YOUR ENDPOINT HERE>")
