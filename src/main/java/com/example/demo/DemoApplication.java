@@ -77,10 +77,12 @@ public class DemoApplication {
 			String encodedKey = new String(Base64.getEncoder().encode(cosmosKey.getBytes(StandardCharsets.UTF_8)));
 
 			MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://cosdbacc:EGw6GbaWqxSPzLjZWoauURc0ARd9tyyxJE3Rpon1y991wU8rYYUd9jg1a7cZdWvoRKLsnHc74A6zTJb5PAdS7g==@cosdbacc.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cosdbacc@"));
-			MongoDatabase db = mongoClient.getDatabase("appData");
-			MongoCollection<Document> data2 = db.getCollection("testCollection");
+			MongoDatabase db = mongoClient.getDatabase("db");
+			MongoCollection<Document> data2 = db.getCollection("coll");
 
 			List<Document> list = data2.find().into(new ArrayList<Document>());
+
+			list.get(0).toJson();
 
 			FindIterable<Document> iterDoc = data2.find();
 			Iterator it = iterDoc.iterator();
