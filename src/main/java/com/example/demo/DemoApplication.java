@@ -1,5 +1,8 @@
 package com.example.demo;
 
+import com.azure.cosmos.CosmosClient;
+import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosDatabase;
 import com.example.demo.domain.FantasyDataResponse;
 import com.example.demo.domain.PlayerData;
 
@@ -71,7 +74,7 @@ public class DemoApplication {
 
 		try{
 			String fileName = "rawFantasyData.gzip";
-			String endpoint = "https://cosdbacc.mongo.cosmos.azure.com:443/";
+			String endpoint = "cosdbacc.mongo.cosmos.azure.com:443/";
 			String cosmosKey = "1c5d2a44-9023-47ba-9896-7be9efe43ba3";
 			String encodedEndpoint = new String(Base64.getEncoder().encode(endpoint.getBytes(StandardCharsets.UTF_8)));
 			String encodedKey = new String(Base64.getEncoder().encode(cosmosKey.getBytes(StandardCharsets.UTF_8)));
@@ -99,11 +102,16 @@ public class DemoApplication {
 //					.key(encodedKey)
 //					.buildAsyncClient();
 
+
 // Create a new CosmosClient via the CosmosClientBuilder
-//			CosmosClient cosmosClient = new CosmosClientBuilder()
-//					.endpoint("<YOUR ENDPOINT HERE>")
-//					.key("<YOUR KEY HERE>")
-//					.buildClient();
+			CosmosClient cosmosClient = new CosmosClientBuilder()
+					.endpoint(encodedEndpoint)
+					.key(encodedKey)
+					.buildClient();
+
+			CosmosDatabase cosmosDatabase = cosmosClient.getDatabase("appData");
+
+			System.out.println(cosmosDatabase.getId());
 		} catch (Exception ex){
 			response.setDetails(ex.getMessage());
 			response.setData(ex);
